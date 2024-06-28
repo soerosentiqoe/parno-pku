@@ -38,3 +38,10 @@ st.altair_chart(alt.Chart(df, height=700, width=700)
         color=alt.Color("idx", legend=None, scale=alt.Scale()),
         size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
     ))
+tab1, tab2 = st.tabs(["Tab 1", "Tab2"])
+tab1.write("this is tab 1")
+tab2.write("this is tab 2")
+
+# You can also use "with" notation:
+with tab1:
+    st.radio("Select one:", [1, 2])
