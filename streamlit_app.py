@@ -52,8 +52,7 @@ with st.chat_message("user"):
 
 
 
-
+st.metric("My metric", 42, 2)
 st.dataframe(df)
 st.table(df.iloc[0:10])
 st.json({"foo":"bar","fu":"ba"})
-st.metric("My metric", 42, 2)
