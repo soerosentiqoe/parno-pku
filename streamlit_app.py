@@ -54,10 +54,5 @@ st.chat_input("Say something")
 with st.container():
     st.chat_input("Say something")
 
-st.area_chart(df)
-st.bar_chart(df)
-st.bar_chart(df, horizontal=True)
-st.line_chart(df)
-st.map(df)
-st.scatter_chart(df)
+
 
