@@ -1,59 +1,43 @@
-import altair as alt
-import numpy as np
+#import library needed
 import pandas as pd
-import streamlit as st
+import streamlit as st 
+import pickle
+import numpy as np
 
-"""
-# Welcome to Streamlit!
+# Load the model 
+with open('iris_model.pkl', 'rb') as f:
+    model = pickle.load(f)
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+# adding images
+species = ['setosa', 'versicolor', 'virginica']
+image = ['setosa.jpg', 'versicolor.jpg', 'virginica.jpg'] 
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+# title and explanation
+st.title("Iris Flower Classification")
+st.write("This app correctly classifies iris flower among 3 possible species")
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+# Creating Sidebar for inputs
+st.sidebar.title("Inputs")
+sepal_length = st.sidebar.slider("sepal length (cm)", 4.3, 7.9, 5.0)
+sepal_width = st.sidebar.slider("sepal width (cm)", 2.0, 4.4, 3.6)
+petal_length = st.sidebar.slider("petal length (cm)", 1.0, 6.9, 1.4)
+petal_width = st.sidebar.slider("petal width (cm)", 0.1, 2.5, 0.2)
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+# Button to trigger prediction
+if st.button("Predict"):
+    # Getting Prediction from model
+    inp = np.array([sepal_length, sepal_width, petal_length, petal_width])
+    inp = np.expand_dims(inp, axis=0)
+    prediction = model.predict(inp)
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
+    # Show Results when the button is clicked
+    st.write('''
+    ## Results
+    Following is the probability of each class
+    ''')
 
-
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
-
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
-tab1, tab2 = st.tabs(["Tab 1", "Tab2"])
-tab1.write("this is tab 1")
-tab2.write("this is tab 2")
-
-# Insert a chat message container.
-with st.chat_message("user"):
-    st.write("Hello 👋")
-    st.line_chart(np.random.randn(30, 3))
-
-# Display a chat input widget at the bottom of the app.
-#st.chat_input("Say something")
-
-
-
-st.metric("My metric", 42, 2)
-st.dataframe(df)
-st.table(df.iloc[0:10])
-st.json({"foo":"bar","fu":"ba"})
+    df = pd.DataFrame(prediction, index=['result'], columns=species)
+    st.dataframe(df)
+    result = species[np.argmax(prediction)]
+    st.write("**This flower belongs to " + result + " class**")
+    st.image(image[np.argmax(prediction)])
